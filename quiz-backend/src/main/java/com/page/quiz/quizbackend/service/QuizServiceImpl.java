@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.page.quiz.quizbackend.error.InvalidQuizIdException;
+import com.page.quiz.quizbackend.error.QuizNotFoundException;
 import com.page.quiz.quizbackend.model.Quiz;
 import com.page.quiz.quizbackend.repository.QuizRepository;
 
@@ -24,19 +26,18 @@ public class QuizServiceImpl implements QuizService{
     }
 
     @Override
-    public Quiz getQuizById(String id) {
-        if(id == null || id.equals("")) {
-            throw new RuntimeException("Invalid id");
+    public Quiz getQuizById(String id) throws QuizNotFoundException, InvalidQuizIdException {
+        if(id == null) {
+            throw new InvalidQuizIdException(id);
         }
 
         Optional<Quiz> quizOpt = quizRepository.findById(id);
         
         if(!quizOpt.isPresent()) {
-            throw new RuntimeException("Quiz not found");
+            throw new QuizNotFoundException(id);
         }
 
         return quizOpt.get();
-        // TODO implement exceptions
     }
 
     @Override
@@ -46,19 +47,18 @@ public class QuizServiceImpl implements QuizService{
         }
 
         return quizRepository.insert(quiz);
-        // TODO implement exceptions
     }
 
     @Override
-    public Quiz updateQuiz(String id, Quiz quiz) {
-        if(id == null || id.equals("")) {
-            throw new RuntimeException("Invalid id");
+    public Quiz updateQuiz(String id, Quiz quiz) throws QuizNotFoundException, InvalidQuizIdException {
+        if(id == null) {
+            throw new InvalidQuizIdException(id);
         }
 
         Optional<Quiz> quizOpt = quizRepository.findById(id);
         
         if(!quizOpt.isPresent()) {
-            throw new RuntimeException("Quiz not found");
+            throw new QuizNotFoundException(id);
         }
 
         Quiz quizToUpdate = quizOpt.get();
@@ -67,13 +67,12 @@ public class QuizServiceImpl implements QuizService{
         quizToUpdate.setQuestions(quiz.getQuestions());
 
         return quizRepository.save(quizToUpdate);
-        // TODO implement exceptions
     }
 
     @Override
-    public void deleteQuiz(String id) {
-        if(id == null || id.equals("")) {
-            throw new RuntimeException("Invalid id");
+    public void deleteQuiz(String id) throws InvalidQuizIdException {
+        if(id == null) {
+            throw new InvalidQuizIdException(id);
         }
 
         quizRepository.deleteById(id);

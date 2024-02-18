@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.page.quiz.quizbackend.error.InvalidQuizIdException;
+import com.page.quiz.quizbackend.error.QuizNotFoundException;
 import com.page.quiz.quizbackend.model.Quiz;
 import com.page.quiz.quizbackend.service.QuizService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,23 +42,44 @@ public class QuizController {
 
     @GetMapping(ID_VARIABLE_MAPPING)
     public ResponseEntity<Quiz> getQuizById(@PathVariable String id) {
-        return new ResponseEntity<>(quizService.getQuizById(id), HttpStatus.OK);
+        try {
+            Quiz quiz = quizService.getQuizById(id);
+            return new ResponseEntity<>(quiz, HttpStatus.OK);
+        } catch (QuizNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        } catch (InvalidQuizIdException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
     }
 
     @PostMapping(EMPTY_MAPPING)
     public ResponseEntity<Quiz> saveQuiz(@RequestBody Quiz quiz) {
-        return new ResponseEntity<>(quizService.saveQuiz(quiz), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(quizService.saveQuiz(quiz), HttpStatus.CREATED);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
     }
     
     @PutMapping(ID_VARIABLE_MAPPING)
     public ResponseEntity<Quiz> updateQuiz(@PathVariable String id, @RequestBody Quiz entity) {
-        return new ResponseEntity<>(quizService.updateQuiz(id, entity), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(quizService.updateQuiz(id, entity), HttpStatus.OK);
+        } catch (QuizNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
+        } catch (InvalidQuizIdException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
     }
 
     @DeleteMapping(ID_VARIABLE_MAPPING)
     public ResponseEntity<Void> deleteQuiz(@PathVariable String id) {
-        quizService.deleteQuiz(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            quizService.deleteQuiz(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (InvalidQuizIdException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
     }
     
 }
