@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,9 +18,8 @@ import com.page.quiz.quizbackend.error.InvalidQuizIdException;
 import com.page.quiz.quizbackend.error.QuizNotFoundException;
 import com.page.quiz.quizbackend.model.Quiz;
 import com.page.quiz.quizbackend.service.QuizService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
+
+import jakarta.validation.Valid;
 
 
 
@@ -53,7 +55,7 @@ public class QuizController {
     }
 
     @PostMapping(EMPTY_MAPPING)
-    public ResponseEntity<Quiz> saveQuiz(@RequestBody Quiz quiz) {
+    public ResponseEntity<Quiz> saveQuiz(@Valid @RequestBody Quiz quiz) {
         try {
             return new ResponseEntity<>(quizService.saveQuiz(quiz), HttpStatus.CREATED);
         } catch (RuntimeException ex) {
@@ -62,7 +64,7 @@ public class QuizController {
     }
     
     @PutMapping(ID_VARIABLE_MAPPING)
-    public ResponseEntity<Quiz> updateQuiz(@PathVariable String id, @RequestBody Quiz entity) {
+    public ResponseEntity<Quiz> updateQuiz(@PathVariable String id, @Valid @RequestBody Quiz entity) {
         try {
             return new ResponseEntity<>(quizService.updateQuiz(id, entity), HttpStatus.OK);
         } catch (QuizNotFoundException ex) {
