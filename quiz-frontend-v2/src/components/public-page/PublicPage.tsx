@@ -1,6 +1,9 @@
+import Header from "./Header";
+
 const PublicPage = () => {
     return (
         <>
+            <Header />
         </>
     );
 }

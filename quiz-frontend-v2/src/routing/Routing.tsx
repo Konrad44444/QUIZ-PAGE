@@ -1,5 +1,5 @@
 import { Navigate, RouteObject, useRoutes } from "react-router-dom";
-import PublicPage from "../components/PublicPage";
+import PublicPage from "../components/public-page/PublicPage";
 import { useIsLogged } from "../features/hookIsLogged";
 
 const publicRoutes: RouteObject[] = [
